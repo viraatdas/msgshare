@@ -1,5 +1,5 @@
 // messageProcessor.js
-export function processMessages(snippetText) {
+export function messageParser(snippetText) {
   const lines = snippetText.split("\n");
   const messages = [];
   let senders = new Set(); // To keep track of unique senders
