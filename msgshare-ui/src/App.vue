@@ -17,9 +17,14 @@
   </div>
 </template>
 
-
 <script>
 import { processMessages } from './messageProcessor';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = 'https://jgiumbeaxukxlccwpwbf.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnaXVtYmVheHVreGxjY3dwd2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDg1ODMxOTcsImV4cCI6MjAyNDE1OTE5N30.oS__y-4aBPliuqiGF8VvkMvgewueVBDDA7wT29Ef4T0';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default {
   name: 'App',
@@ -41,16 +46,32 @@ export default {
       // This could be the first sender or any logic you define
       this.primarySender = this.senders.length ? this.senders[0] : '';
     },
-    createSnippet() {
+    async createSnippet() {
       console.log('Creating the snippet with messages:', this.messages);
-      // Additional logic for creating the snippet
+      const uniqueId = generateUniqueId();
+      const { data, error } = await supabase
+        .from('snippets')
+        .insert([
+          { slug: uniqueId, content: this.snippetText }
+        ]);
+
+      if (error) {
+        console.error('Error saving snippet:', error);
+      } else {
+        console.log('Snippet saved successfully. URL ID:', uniqueId, data);
+        this.$router.push({ name: 'Snippet', params: { slug: uniqueId } });
+      }
     },
     messageClass(sender) {
       // Determines the CSS class based on the sender
       return this.primarySender === sender ? 'right' : 'left';
-    }
+    },
   }
 };
+
+function generateUniqueId(length = 8) {
+  return Math.random().toString(20).substr(2, length);
+}
 </script>
 
 

@@ -1,4 +1,4 @@
-# textshare
+# msgshare
 
 pastebin but for your text messages
 
