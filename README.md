@@ -1,5 +1,7 @@
 # msgshare
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/17a21ba3-2c88-44cf-93d9-b3e61f5d8b04/deploy-status)](https://app.netlify.com/sites/msgshare/deploys)
+
 pastebin but for your text messages
 
 _url:_ [msgshare.com](msgshare.com)
