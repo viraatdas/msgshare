@@ -2,20 +2,24 @@
     <div id="app" class="container">
       <div class="input-section">
         <h1>Create a Snippet</h1>
-        <p>{{ description }}</p>
-        <textarea v-model="snippetText" rows="10" cols="60"></textarea>
-        <br>
-        <button @click="processMessages">Preview Snippet</button>
-        <button @click="createSnippet">Create Snippet</button>
+        <input v-model="snippetDescription" placeholder="Enter a description..." class="description-input" />
+        <textarea v-model="snippetText" rows="10" cols="60" class="snippet-textarea"></textarea>
+        <div class="button-container">
+          <button @click="previewSnippet">Preview Snippet</button>
+          <button @click="createSnippet">Create Snippet</button>
+        </div>
       </div>
       <div class="output-section">
-        <h2>Snippet Preview</h2>
-        <div v-for="(message, index) in messages" :key="index" :class="['message', messageClass(message.sender)]">
-          <div class="message-content">{{ message.content }}</div>
-        </div>
+        <!-- Wrapper element for the v-if condition -->
+        <template v-if="showPreview">
+          <div v-for="(message, index) in messages" :key="index" :class="['message', messageClass(message.sender)]">
+            <div class="message-content">{{ message.content }}</div>
+          </div>
+        </template>
       </div>
     </div>
   </template>
+  
   
   <script>
   import { messageParser } from '../messageProcessor';
@@ -27,56 +31,55 @@
       return {
         description: 'Enter your chat transcript below:',
         snippetText: '',
+        snippetDescription: '',
         messages: [],
-        senders: [], // Keep track of all unique senders
-        primarySender: '', // Automatically determined primary sender
+        senders: [],
+        primarySender: '',
+        showPreview: false, // Controls the visibility of the preview
       };
     },
     methods: {
-      processMessages() {
-        if (this.snippetText.trim() === '') {
-          alert('Please enter some text to create a snippet.');
+      previewSnippet() {
+        if (!this.validateInput()) {
           return;
         }
-  
         const result = messageParser(this.snippetText);
         this.messages = result.messages;
         this.senders = result.senders;
-        // Automatically determine the primary sender
-        // This could be the first sender or any logic you define
         this.primarySender = this.senders.length ? this.senders[0] : '';
+        this.showPreview = true; // Show preview only after processing
       },
       async createSnippet() {
-        this.processMessages();
-        if (!this.messages.length) {
-          return; // Exit if no messages to process
+        if (!this.validateInput()) {
+          return;
         }
-  
         const uniqueId = generateUniqueId();
         const { error } = await supabase
           .from('snippets')
-          .insert([
-            { slug: uniqueId, content: this.snippetText }
-          ]);
-  
+          .insert([{ slug: uniqueId, content: this.snippetText, description: this.snippetDescription }]);
         if (error) {
           console.error('Error saving snippet:', error);
         } else {
+          this.showPreview = false; // Reset preview visibility
           this.$router.push({ name: 'Snippet', params: { slug: uniqueId } });
         }
       },
+      validateInput() {
+        if (this.snippetText.trim() === '' || this.snippetDescription.trim() === '') {
+          alert('Please enter both a description and some text for the snippet.');
+          return false;
+        }
+        return true;
+      },
       messageClass(sender) {
-        // Determines the CSS class based on the sender
         return this.primarySender === sender ? 'right' : 'left';
       },
-    }
+    },
   };
-  
   function generateUniqueId(length = 8) {
     return Math.random().toString(20).substr(2, length);
   }
   </script>
-  
   
   
   <style src="../SnippetStyles.css"></style>
