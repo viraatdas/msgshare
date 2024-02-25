@@ -31,11 +31,17 @@ async function validateSlug(slug) {
   try {
     const { data, error } = await supabase
       .from("snippets")
-      .select("id")
+      .select("slug")
       .eq("slug", slug);
-    if (error) throw error;
+
+    if (error) {
+      console.error("Supabase error:", error);
+      throw error;
+    }
+
     return data.length > 0;
   } catch (error) {
+    console.error("Validation error:", error);
     return false; // Assume invalid slug if there's an error
   }
 }
