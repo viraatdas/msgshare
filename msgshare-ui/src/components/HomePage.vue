@@ -35,7 +35,7 @@
         messages: [],
         senders: [],
         primarySender: '',
-        showPreview: false, // Controls the visibility of the preview
+        showPreview: false, 
       };
     },
     methods: {
