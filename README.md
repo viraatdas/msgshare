@@ -4,7 +4,9 @@
 
 pastebin but for your text messages
 
-_url:_ [msgshare.com](msgshare.com)
+_url:_ [msgshare.com](https://msgshare.com/)
+
+![Demo of website](assets/demo.gif)
 
 ## Flow
 
