@@ -1,4 +1,3 @@
-// messageProcessor.js
 export function messageParser(snippetText) {
   const lines = snippetText.split("\n");
   const messages = [];
@@ -7,27 +6,34 @@ export function messageParser(snippetText) {
   let contentBuffer = "";
 
   lines.forEach((line) => {
-    if (line.includes(":")) {
-      const splitLine = line.split(":");
-      const sender = splitLine[0].trim();
+    // Improved detection of sender: using a regex to match patterns like "Name:" possibly followed by spaces or tabs
+    const senderMatch = line.match(/^(\w[\w\s]*?):\s*/);
+    if (senderMatch) {
+      const sender = senderMatch[1];
       senders.add(sender); // Add sender to the set of unique senders
 
+      // Push the previous message (if any) to the messages array before starting a new message
       if (contentBuffer) {
         messages.push({ sender: currentSender, content: contentBuffer.trim() });
         contentBuffer = "";
       }
       currentSender = sender;
-      contentBuffer += splitLine.slice(1).join(":").trim();
+      // Append the rest of the line (the message content) to the buffer
+      contentBuffer += line.substring(senderMatch[0].length);
     } else {
-      contentBuffer += "\n" + line.trim();
+      // For multiline messages, append with a line break for formatting
+      contentBuffer += "\n" + line;
     }
   });
 
+  // After the loop, check if there's an unparsed message in the buffer
   if (contentBuffer) {
     messages.push({ sender: currentSender, content: contentBuffer.trim() });
   }
 
-  // Determine primary and secondary senders based on the order of appearance
-  senders = Array.from(senders); // Convert Set to Array for easier handling
-  return { messages, senders }; // Return both messages and senders
+  // Convert Set to Array for easier handling
+  senders = Array.from(senders);
+
+  // Return both messages and senders
+  return { messages, senders };
 }

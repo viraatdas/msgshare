@@ -74,6 +74,8 @@ button:active {
   border-radius: 20px; /* Rounded corners */
   max-width: 60%; /* Limit width */
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  word-wrap: break-word; /* Wrap long words */
+  text-align: left; /* Align text to the left */
 }
 
 .message-content.left {
