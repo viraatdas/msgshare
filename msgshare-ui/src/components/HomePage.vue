@@ -8,6 +8,9 @@
           <button @click="previewSnippet">Preview Snippet</button>
           <button @click="createSnippet">Create Snippet</button>
         </div>
+        <h4>
+          MsgShare is a convenient way for you to share your text conversations. Essentially, pastebin but for text messages.
+        </h4>
       </div>
       <div class="output-section">
         <!-- Wrapper element for the v-if condition -->
