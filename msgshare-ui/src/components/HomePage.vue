@@ -1,7 +1,7 @@
 <template>
     <div id="app" class="container">
       <div class="input-section">
-        <h1>Create a Snippet</h1>
+        <h1>Paste your text conversations</h1>
         <input v-model="snippetDescription" placeholder="Enter a description..." class="description-input" />
         <textarea v-model="snippetText" rows="10" cols="60" class="snippet-textarea"></textarea>
         <div class="button-container">
