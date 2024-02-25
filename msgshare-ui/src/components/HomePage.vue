@@ -1,9 +1,9 @@
 <template>
     <div id="app" class="container">
       <div class="input-section">
-        <h1>Paste your text conversations</h1>
+        <h1>Paste your text conversation</h1>
         <input v-model="snippetDescription" placeholder="Enter a description..." class="description-input" />
-        <textarea v-model="snippetText" rows="10" cols="60" class="snippet-textarea"></textarea>
+        <textarea v-model="snippetText" rows="20" cols="100" class="snippet-textarea"></textarea>
         <div class="button-container">
           <button @click="previewSnippet">Preview Snippet</button>
           <button @click="createSnippet">Create Snippet</button>
