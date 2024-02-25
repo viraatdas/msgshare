@@ -2,7 +2,7 @@
   <div class="snippet-page">
     <!-- URL and Description Display Section -->
     <div class="url-copy-section">
-      <h1>Your Snippet URL</h1>
+      <h1>Snippet URL</h1>
       <div class="url-input-container">
         <input ref="snippetUrl" :value="fullUrl" readonly>
         <button @click="copyUrl">Copy URL</button>
