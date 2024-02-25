@@ -1,23 +1,39 @@
 <template>
   <div class="snippet-page">
-    <!-- URL Display and Copy Section -->
+    <!-- URL and Description Display Section -->
     <div class="url-copy-section">
       <h1>Your Snippet URL</h1>
-      <input ref="snippetUrl" :value="fullUrl" readonly>
-      <button @click="copyUrl">Copy URL</button>
+      <div class="url-input-container">
+        <input ref="snippetUrl" :value="fullUrl" readonly>
+        <button @click="copyUrl">Copy URL</button>
+      </div>
+      <p class="snippet-description">{{ snippetDescription }}</p>
     </div>
+    <!-- Messages Display Section -->
+    <div class="output-section">
+        <!-- Wrapper element for the v-if condition -->
+        <template v-if="showPreview">
+          <div v-for="(message, index) in messages" :key="index" :class="['message', messageClass(message.sender)]">
+            <div class="message-content">{{ message.content }}</div>
+          </div>
+        </template>
+      </div>
   </div>
 </template>
 
-
 <script>
-import { supabase } from '../infra/config'
+import { messageParser } from '../messageProcessor';
+import { supabase } from '../infra/config';
 
 export default {
   props: ['slug'],
   data() {
     return {
       snippetContent: '',
+      snippetDescription: '',
+      messages: [],
+      primarySender: '',
+      showPreview: true,
     };
   },
   computed: {
@@ -26,14 +42,13 @@ export default {
     },
   },
   async mounted() {
-    console.log(this.slug);  
     await this.fetchSnippet();
   },
   methods: {
     async fetchSnippet() {
       const { data, error } = await supabase
         .from('snippets')
-        .select('content')
+        .select('content, description') // Fetch both content and description
         .eq('slug', this.slug)
         .single();
 
@@ -42,48 +57,26 @@ export default {
         return;
       }
 
+      // Set content and description from fetched data
       this.snippetContent = data.content;
+      this.snippetDescription = data.description;
+
+      // Process the content to display messages
+      const result = messageParser(this.snippetContent);
+      this.messages = result.messages;
+      this.senders = result.senders;
+      this.primarySender = this.senders.length ? this.senders[0] : '';
+      this.showPreview = true; // Show preview only after processing
     },
     copyUrl() {
       this.$refs.snippetUrl.select();
       document.execCommand('copy');
     },
+    messageClass(sender) {
+      return this.primarySender === sender ? 'right' : 'left';
+    },
   },
 };
 </script>
 
-<style scoped>
-.url-copy-section {
-  margin-bottom: 40px; /* Adds some space between the URL section and the content */
-}
-
-.snippet-content {
-  padding: 20px;
-  background-color: #f9f9f9; /* Light background for the content area */
-  border-radius: 8px; /* Optional: adds rounded corners for the content box */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds a subtle shadow for depth */
-}
-
-/* Styling for the input box to make it more visually integrated */
-input[readonly] {
-  cursor: pointer; /* Changes the cursor to indicate the field is clickable */
-  background-color: #e9ecef; /* Light grey background */
-  border: 1px solid #ced4da; /* Matching border */
-  padding: 10px;
-  border-radius: 4px;
-}
-
-button {
-  margin-left: 10px; /* Adds spacing between the input field and the button */
-  background-color: #007bff; /* Example button color */
-  color: white; /* Text color */
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3; /* Darker shade on hover */
-}
-</style>
+<style src="../SnippetStyles.css"></style>
